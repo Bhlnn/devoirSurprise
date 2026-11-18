@@ -34,13 +34,13 @@ jobs:
       # Download Docker image
       - name: Pull Docker image
         run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/devops:latest
+          docker pull garrug/surprise:frontend
 
       # Create temporary container
       - name: Create temporary container
         run: |
           docker create --name html-container \
-            ${{ secrets.DOCKERHUB_USERNAME }}/devops:latest
+            garrug/surprise:frontend
 
       # Extract HTML file
       - name: Extract HTML file
