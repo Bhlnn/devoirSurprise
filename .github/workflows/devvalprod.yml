@@ -55,9 +55,9 @@ jobs:
 
       - name: Merge Dev dans val
         run: |
-          git checkout val
+          git checkout Val
           git merge --no-ff origin/Dev -m "chore: merge Dev into val [skip ci]"
-          git push origin val
+          git push origin Val
 
   # ------------------------------------------------------------------
   # 3. VAL : validation sur la branche val
@@ -69,7 +69,7 @@ jobs:
       - name: Checkout de la branche val
         uses: actions/checkout@v4
         with:
-          ref: val
+          ref: Val
 
       - name: Tests d'intégration
         run: |
@@ -100,9 +100,9 @@ jobs:
 
       - name: Merge val dans prod
         run: |
-          git checkout prod
-          git merge --no-ff origin/val -m "chore: merge val into prod [skip ci]"
-          git push origin prod
+          git checkout Prod
+          git merge --no-ff origin/Val -m "chore: merge val into prod [skip ci]"
+          git push origin Prod
 
   # ------------------------------------------------------------------
   # 5. PROD : déploiement
@@ -117,7 +117,7 @@ jobs:
       - name: Checkout de la branche prod
         uses: actions/checkout@v4
         with:
-          ref: prod
+          ref: Prod
 
       - name: Déploiement
         run: |
