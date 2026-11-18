@@ -1,0 +1,130 @@
+name: Dev Val Prod
+
+on:
+  push:
+    branches:
+      - Dev
+  workflow_dispatch:
+
+# Un seul pipeline à la fois, pour éviter les merges concurrents
+concurrency:
+  group: pipeline-dev-val-prod
+  cancel-in-progress: false
+
+# Nécessaire pour pouvoir pousser sur les branches val et prod
+permissions:
+  contents: write
+
+jobs:
+  # ------------------------------------------------------------------
+  # 1. DEV : vérifications sur la branche Dev
+  # ------------------------------------------------------------------
+  dev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Lint
+        run: |
+          echo "Lint du code (ex: flake8, eslint)"
+          # npm run lint
+
+      - name: Tests unitaires
+        run: |
+          echo "Tests unitaires"
+          # npm test
+          # pytest
+
+  # ------------------------------------------------------------------
+  # 2. Merge Dev -> val
+  # ------------------------------------------------------------------
+  merge-val:
+    needs: dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (historique complet)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configuration de git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge Dev dans val
+        run: |
+          git checkout Val
+          git merge --no-ff origin/Dev -m "chore: merge Dev into val [skip ci]"
+          git push origin Val
+
+  # ------------------------------------------------------------------
+  # 3. VAL : validation sur la branche val
+  # ------------------------------------------------------------------
+  val:
+    needs: merge-val
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de la branche val
+        uses: actions/checkout@v4
+        with:
+          ref: Val
+
+      - name: Tests d'intégration
+        run: |
+          echo "Tests d'intégration"
+          # ./scripts/integration-tests.sh
+
+      - name: Tests de validation
+        run: |
+          echo "Tests de validation / recette"
+          # npm run test:e2e
+
+  # ------------------------------------------------------------------
+  # 4. Merge val -> prod
+  # ------------------------------------------------------------------
+  merge-prod:
+    needs: val
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (historique complet)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configuration de git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge val dans prod
+        run: |
+          git checkout Prod
+          git merge --no-ff origin/Val -m "chore: merge val into prod [skip ci]"
+          git push origin Prod
+
+  # ------------------------------------------------------------------
+  # 5. PROD : déploiement
+  #    Ajouter des "required reviewers" sur l'environnement "production"
+  #    dans Settings > Environments pour exiger une validation manuelle.
+  # ------------------------------------------------------------------
+  prod:
+    needs: merge-prod
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout de la branche prod
+        uses: actions/checkout@v4
+        with:
+          ref: Prod
+
+      - name: Déploiement
+        run: |
+          echo "Déploiement en production"
+          # commande de déploiement (ssh, rsync, publication...)
+
+      - name: Vérification après déploiement
+        run: |
+          echo "Vérification que l'application répond"
+          # curl --fail https://<adresse-prod>/health
