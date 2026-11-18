@@ -46,7 +46,14 @@ jobs:
       - name: Extract HTML file
         run: |
           mkdir public
+
           docker cp html-container:/usr/share/nginx/html/index.html public/index.html
+
+          echo "========== HTML extracted =========="
+          cat public/index.html
+
+          echo "========== Files in public =========="
+          ls -lah public
 
       # Remove temporary container
       - name: Remove temporary container
