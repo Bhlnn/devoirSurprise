@@ -4,7 +4,7 @@ name: Extract and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master
+      - Dev
   workflow_dispatch:
 
 permissions:
@@ -34,19 +34,26 @@ jobs:
       # Download Docker image
       - name: Pull Docker image
         run: |
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/devops:latest
+          docker pull garrug/surprise:frontend
 
       # Create temporary container
       - name: Create temporary container
         run: |
           docker create --name html-container \
-            ${{ secrets.DOCKERHUB_USERNAME }}/devops:latest
+            garrug/surprise:frontend
 
       # Extract HTML file
       - name: Extract HTML file
         run: |
           mkdir public
+
           docker cp html-container:/usr/share/nginx/html/index.html public/index.html
+
+          echo "========== HTML extracted =========="
+          cat public/index.html
+
+          echo "========== Files in public =========="
+          ls -lah public
 
       # Remove temporary container
       - name: Remove temporary container
@@ -70,7 +77,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      # Configure GitHub Pages
+      # Configure GitHub Page
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
