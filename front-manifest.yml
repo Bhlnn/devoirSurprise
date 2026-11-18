@@ -5,15 +5,18 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: app
+      app: frontend
   template:
     metadata:
       labels:
-        app: app
+        app: frontend
     spec:
       containers:
       
-      - name: web-app
+      - name: frontend
         image: garrug/surprise:frontend
         ports:
-        - containerPort: 8080
+        - containerPort: 80
+
+  
+  
