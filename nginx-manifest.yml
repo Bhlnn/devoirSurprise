@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: apache-deployment
 spec:
   selector:
     matchLabels:
-      app: nginx
+      app: apache
   template:
     metadata:
       labels:
-        app: nginx
+        app: apache
     spec:
       containers:
       
-      - name: nginx
+      - name: apache
         image: garrug/surprise:backend
         ports:
         - containerPort: 80
