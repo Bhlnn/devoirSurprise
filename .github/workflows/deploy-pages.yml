@@ -70,7 +70,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      # Configure GitHub Pages
+      # Configure GitHub Page
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
