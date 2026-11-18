@@ -21,9 +21,9 @@ spec:
               name: "postgres"
           env:
             - name: POSTGRES_DB
-              value: vehicle_quotes
+              value: db
             - name: POSTGRES_USER
-              value: vehicle_quotes
+              value: user
             - name: POSTGRES_PASSWORD
               value: password
           resources:
